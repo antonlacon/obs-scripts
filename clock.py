@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # Copyright (C) 2018-2020 Ian Leonard (antonlacon@gmail.com)
 
+
 # Core Modules
 from datetime import datetime
 # Project Modules
@@ -12,7 +13,6 @@ import obspython as obs
 
 clock_24hr      = False
 timezone_text   = ""
-sleep_interval  = 60
 source_name     = ""
 
 
@@ -31,18 +31,13 @@ def update_text():
     if clock_24hr is True:
       time_now = datetime.now().strftime("%H:%M")
     else:
-      time_now = datetime.now().strftime("%I:%M %p")
-      # Trim leading zero
-      time_now = time_now.lstrip("0")
+      time_now = datetime.now().strftime("%I:%M %p").lstrip("0")
 
     # Add timezone text beneath clock
     if timezone_text != "":
       clock_entry = f"{time_now}\n{timezone_text}"
     else:
       clock_entry = time_now
-
-    # Uncomment to print time in OBS script log
-#    print(clock_entry)
 
     # Updating the OBS source data
     settings = obs.obs_data_create()
@@ -54,7 +49,6 @@ def update_text():
     set_timer_interval()
 
 def refresh_pressed(props, prop):
-#  print("Refresh button pushed.")
   update_text()
 
 def script_description():
@@ -63,21 +57,19 @@ def script_description():
 def script_update(settings):
   global clock_24hr
   global timezone_text
-  global sleep_interval
   global source_name
 
   clock_24hr = obs.obs_data_get_bool(settings, "clock_24hr")
   timezone_text = obs.obs_data_get_string(settings, "timezone_text")
-  sleep_interval = obs.obs_data_get_int(settings, "sleep_interval")
   source_name = obs.obs_data_get_string(settings, "source_name")
-
-  obs.timer_remove(update_text)
 
   if source_name != "":
     set_timer_interval()
 
 def script_defaults(settings):
-  obs.obs_data_set_default_int(settings, "sleep_interval", 60)
+  obs.obs_data_set_default_bool(settings, "clock_24hr", False)
+  obs.obs_data_set_default_string(settings, "timezone_text", "")
+  obs.obs_data_set_default_string(settings, "source_name", "")
 
 def script_properties():
   props = obs.obs_properties_create()
@@ -87,9 +79,6 @@ def script_properties():
 
   # Text field entry
   obs.obs_properties_add_text(props, "timezone_text", "Timezone (optional)", obs.OBS_TEXT_DEFAULT)
-
-  # Integer field with up/down arrows
-  obs.obs_properties_add_int(props, "sleep_interval", "Update Interval (seconds)", 5, 3600, 1)
 
   # Drop down menu of Text sources
   p = obs.obs_properties_add_list(props, "source_name", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
