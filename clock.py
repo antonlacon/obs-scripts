@@ -83,7 +83,7 @@ def script_properties():
   obs.obs_properties_add_int(props, "sleep_interval", "Update Interval (seconds)", 5, 3600, 1)
 
   # Drop down menu of Text sources
-  p = obs.obs_properties_add_list(props, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
+  p = obs.obs_properties_add_list(props, "source_name", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
   sources = obs.obs_enum_sources()
   if sources is not None:
     for source in sources:
