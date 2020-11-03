@@ -44,7 +44,7 @@ def update_text():
     obs.obs_source_release(source)
 
 def refresh_pressed(props, prop):
-  print("Refresh button pushed.")
+#  print("Refresh button pushed.")
   update_text()
 
 def script_description():
