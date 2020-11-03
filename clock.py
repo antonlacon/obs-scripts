@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # SPDX-License-Identifier: GPL-3.0
-# Copyright (C) 2018 Ian Leonard (antonlacon@gmail.com)
+# Copyright (C) 2018-2020 Ian Leonard (antonlacon@gmail.com)
 
 # Core Modules
 from datetime import datetime
@@ -9,10 +9,18 @@ from datetime import datetime
 # OBS Modules
 import obspython as obs
 
+
 clock_24hr      = False
 timezone_text   = ""
 sleep_interval  = 60
 source_name     = ""
+
+
+def set_timer_interval():
+  # Clear current timer
+  obs.timer_remove(update_text)
+  # Set timer to be until next minute strikes; timer in milliseconds
+  obs.timer_add(update_text, (60 - int(datetime.now().strftime("%S"))) * 1000)
 
 def update_text():
   global source_name
@@ -20,7 +28,7 @@ def update_text():
 
   if source is not None:
     # Get the time from the computer OBS runs on
-    if clock_24hr == True:
+    if clock_24hr is True:
       time_now = datetime.now().strftime("%H:%M")
     else:
       time_now = datetime.now().strftime("%I:%M %p")
@@ -43,12 +51,14 @@ def update_text():
     obs.obs_data_release(settings)
     obs.obs_source_release(source)
 
+    set_timer_interval()
+
 def refresh_pressed(props, prop):
 #  print("Refresh button pushed.")
   update_text()
 
 def script_description():
-  return "Update a Text source to the current time.\n\nLicense: GPL-3 (https://www.gnu.org/licenses/gpl-3.0.en.html)\nCopyright (C) 2018 Ian Leonard (antonlacon@gmail.com)"
+  return "Update a Text source to the current time.\n\nLicense: GPL-3 (https://www.gnu.org/licenses/gpl-3.0.en.html)\nCopyright (C) 2018-2020 Ian Leonard (antonlacon@gmail.com)"
 
 def script_update(settings):
   global clock_24hr
@@ -64,8 +74,7 @@ def script_update(settings):
   obs.timer_remove(update_text)
 
   if source_name != "":
-    # Timer is in milliseconds
-    obs.timer_add(update_text, sleep_interval * 1000)
+    set_timer_interval()
 
 def script_defaults(settings):
   obs.obs_data_set_default_int(settings, "sleep_interval", 60)
